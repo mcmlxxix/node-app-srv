@@ -13,6 +13,7 @@ Application service for [node-jsondb](https://github.com/mcmlxxix/node-jsondb)
 ## Service Configuration
 
 './settings/settings.json'
+
 {
 	settings:{
 		"host":				"localhost",
@@ -22,6 +23,7 @@ Application service for [node-jsondb](https://github.com/mcmlxxix/node-jsondb)
 }
 
 './settings/applications.json'
+
 {
 	/* application namespace */
 	test:{
@@ -33,7 +35,8 @@ Application service for [node-jsondb](https://github.com/mcmlxxix/node-jsondb)
 		file:		"test.js",
 		/* application user groups (see users.js for group membership) */
 		groups:		["testgroup","admin"]
-		/* NOTE: comment out "groups" property to allow anonymous access, set "groups" value to "*" to allow all groups access */
+		/* NOTE: comment out "groups" property to allow anonymous access, 
+		set "groups" value to "*" to allow all groups access */
 	},
 	test2:{
 		...
@@ -41,6 +44,7 @@ Application service for [node-jsondb](https://github.com/mcmlxxix/node-jsondb)
 }
 
 './settings/users.json'
+
 {
 	/* NOTE: each user name must be unique, and comments must be removed */
 	users:{	
@@ -70,6 +74,7 @@ Application service for [node-jsondb](https://github.com/mcmlxxix/node-jsondb)
 ## Application Configuration
 
 './settings/databases.json'
+
 {
 	test:{
 		file:		"./applications/test/db/test.json",
