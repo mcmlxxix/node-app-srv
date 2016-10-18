@@ -5,8 +5,25 @@
 	
 **/
 
-/* global variables */
+/* local variables */
 var fs, db, net, srv, rl, tx, err, defs, oper, crypto, pako, log, settings, dblist, databases, identities, users, groups, applications;
+
+/* global functions */
+global.createUser = function(username,password,group) {
+	/* if user already exists, fail */
+	if(!users[username]) {
+		return false;
+	}
+	/* create user */
+	users[username] = password;
+	/* add to group (optional) */
+	if(group) {
+		groups[group].push(username);
+	}
+	fs.writeFileSync('./settings/users.json','{\r\n' + JSON.stringify(users) + JSON.stringify(groups) + '\r\n}','utf8');
+	log('user/group list saved to ' + './settings/users.json');
+	return true;
+}
 
 /* console logging constants */
 const LOG_INFO = 1;
@@ -159,13 +176,30 @@ function authenticate(socket,request,callback) {
 }
 /* determine if authenticated user is in an application group list */
 function isApplicationUser(app,user) {
+	/* application allows anonymous access */
+	if(!appdata.groups) {
+		return true;
+	}
+	/* if we are allowing access to all groups */
+	if(appdata.groups == "*" || appdata.groups[0] == "*") {
+		for(var ug=0;ug<groups.length;ug++) {
+			if(isGroupMember(groups[ug],user))
+				return true;
+		}
+	}
+	/* otherwise, search specified groups */
 	for(var ag=0;ag<app.appdata.groups.length;ag++) {
 		var agroup = app.appdata.groups[ag];
-		var ugroup = groups[agroup];
-		for(var u=0;u<ugroup.length;u++) {
-			if(ugroup[u] == user.name) {
-				return true;
-			}
+		if(isGroupMember(groups[agroup],user))
+			return true;
+	}
+	return false;
+}
+/* determine if user is in a given user group */
+function isGroupMember(group,user) {
+	for(var u=0;u<group.length;u++) {
+		if(group[u] == user.name) {
+			return true;
 		}
 	}
 	return false;
@@ -199,9 +233,9 @@ function loadApplications(alist) {
 /* initialization */
 function init() {
 
-	var defs = require('./lib/defs');
-	err = defs.error;
-	oper = defs.oper;
+	global.defs = require('./lib/defs');
+	err = global.defs.error;
+	oper = global.defs.oper;
 	
 	tx = require('./lib/transform');
 	log = require('node-logger');

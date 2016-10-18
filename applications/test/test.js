@@ -46,7 +46,7 @@
 
 var db = require('node-jsondb');
 var fs = require('fs');
-var defs = require('../../lib/defs');
+var defs = global.defs;
 var oper = defs.oper;
 var err = defs.err;
 var lock = defs.lock;

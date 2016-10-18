@@ -1,0 +1,18 @@
+{
+	"users":{	
+		"admin"			:	"admin",
+		"guest"			:	"", 
+		"testuser"		:	"test"
+	},
+	"groups":{
+		"guest":[
+			"guest"
+		],
+		"testgroup":[
+			"testuser"
+		],
+		"admin":[
+			"admin"
+		]
+	}
+}
