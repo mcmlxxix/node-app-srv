@@ -1,0 +1,16 @@
+{
+	"testarray":[
+		{"name":"mcmlxxix", "score":10},
+		{"name":"tits", "score":0}
+	],
+	"testobject":{
+		"testes":1000,
+		"nipples":2
+	},
+	"testprimitive":[
+		"one",
+		"two",
+		"three",
+		"four"
+	]
+}
