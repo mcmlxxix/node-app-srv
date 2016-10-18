@@ -90,7 +90,7 @@ function handleRequest(socket,request) {
 	this may end up being in a switch statement if there will be more operations 
 	supported at the application server level (application management, etc) */
 	if(request.oper == oper.AUTH) {
-		return authenticate(socket,request,callback,d);
+		return authenticate(socket,request,callback);
 	}
 	/* dont accept requests from unauthenticated clients */
 	if(socket.user == null) {
@@ -110,7 +110,7 @@ function handleRequest(socket,request) {
 		return sendError(socket,request,err.USER_GROUP);
 	}
 	/* pass request to application request handler */
-	app.emit('request',user,request,callback);
+	app.emit('request',socket.user,request,callback);
 	
 	function callback(response) {
 		//var endTime = process.hrtime();
