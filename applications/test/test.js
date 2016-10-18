@@ -63,7 +63,7 @@ const LOG_DEBUG = 4;
 
 /* this is where the majick happens.. you can specify anything you want here, in terms of 'request.oper', 
 just make sure the client is speaking your language, unowudimean? */
-function handleRequest(user, request,callback) {
+function handleRequest(user,request,callback) {
 	
 	/* if no operation was specified, we dont know what this request is for */
 	if(request.oper == undefined) {
