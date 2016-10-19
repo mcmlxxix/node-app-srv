@@ -169,8 +169,9 @@ function handleRequest(socket,request) {
 		return sendError(socket,request,err.USER_GROUP);
 	}
 	/* pass request to application request handler */
-	app.emit('request',socket.user,request,callback);
+	app.emit('request',socket,request,callback);
 	
+	/* callback is passed to all application request handlers */
 	function callback(response) {
 		//var endTime = process.hrtime();
 		// if(request.id == null)

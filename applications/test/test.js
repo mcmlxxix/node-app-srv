@@ -63,7 +63,7 @@ const LOG_DEBUG = 4;
 
 /* this is where the majick happens.. you can specify anything you want here, in terms of 'request.oper', 
 just make sure the client is speaking your language, unowudimean? */
-function handleRequest(user,request,callback) {
+function handleRequest(socket,request,callback) {
 	
 	/* if no operation was specified, we dont know what this request is for */
 	if(request.oper == undefined) {
@@ -72,18 +72,18 @@ function handleRequest(user,request,callback) {
 	
 	/* because this example application is meant to just interact with a database, the db property must be defined */
 	if(request.db == undefined) {
-		return sendError(socket,request,err.INVALID_DB);
+		return sendError(request,callback,err.INVALID_DB);
 	}
 
 	/* if the request database does not exist */
 	var database = databases[request.db.toUpperCase()];
 	if(database == undefined) {
-		return sendError(socket,request,err.INVALID_DB);
+		return sendError(request,callback,err.INVALID_DB);
 	}
 	
 	/* for purposes of demonstration, these are the standard database 'write' commands and how to deal with them
 	NOTE: we still handle the read commands here, as a 'write' lock permits reading */
-	if(canWrite(database,user)) {
+	if(canWrite(database,socket.user)) {
 		switch(request.oper) {
 		case oper.READ:
 			database.read(request,callback);
@@ -110,12 +110,12 @@ function handleRequest(user,request,callback) {
 	}
 	/* for purposes of demonstration, these are the standard database 'read' commands and how to deal with them
 	NOTE: we return an error if a 'write' operation is attempted with a 'read' lock */
-	else if(canRead(database,user)) {
+	else if(canRead(database,socket.user)) {
 		switch(request.oper) {
 		case oper.WRITE:
 		case oper.LOCK:
 		case oper.UNLOCK:
-			sendError(socket,request,err.NOT_AUTHORIZED);
+			sendError(request,callback,err.NOT_AUTHORIZED);
 			break;
 		case oper.READ:
 			database.read(request,callback);
