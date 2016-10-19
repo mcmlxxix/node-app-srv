@@ -6,7 +6,7 @@
 **/
 
 /* local variables */
-var fs, db, net, srv, rl, tx, err, defs, oper, crypto, pako, log, settings, dblist, databases, identities, users, groups, applications;
+var fs, db, net, srv, rl, tx, err, defs, oper, crypto, pako, log, settings, dblist, databases, identities, users, groups, applications, clients;
 
 /* global shit */
 global.defs = require('./lib/defs');
@@ -57,6 +57,15 @@ global.saveUsers = function() {
 	fs.writeFileSync('./settings/users.json','{\r\n' + JSON.stringify(users) + JSON.stringify(groups) + '\r\n}','utf8');
 	log('user/group list saved to ' + './settings/users.json');
 }
+global.getClients = function(app) {
+	var clist = [];
+	for(var c in clients) {
+		if(app && app != c.app) 
+			continue;
+		clist.push(c);
+	}
+	return clist;
+}
 
 /* console logging constants */
 const LOG_INFO = 1;
@@ -98,6 +107,7 @@ function onConnection(socket) {
 	});
 	socket.on('close',() => {
 		log('disconnected: ' + socket.ip,LOG_INFO);
+		delete clients[socket.id];
 		identities.push(socket.id);
 		socket.rl.close();
 	});
@@ -204,8 +214,13 @@ function authenticate(socket,request,callback) {
 		request.status = err.INVALID_USER;
 		delete socket.user;
 	}
+	sortClient(socket,request);
 	callback(request);
 	return true;
+}
+/* store authenticated client in clients object */
+function sortClient(socket, request) {
+	clients[socket.id] = { socket:socket, app:request.app };
 }
 /* determine if authenticated user is in an application group list */
 function isApplicationUser(app,user) {
@@ -286,6 +301,7 @@ function init() {
 	
 	var alist = require('./settings/applications');
 	applications = loadApplications(alist);
+	clients = {};
 	
 	srv = net.createServer();
 	srv.on('listening',onListen);
