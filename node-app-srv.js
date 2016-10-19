@@ -138,7 +138,6 @@ function parseRequest(socket,data) {
 	}
 	return result;
 }
-/** TODO: pass all authentication and user validation to application? */
 /* handle inbound requests */
 function handleRequest(socket,request) {
 	//var startTime = Date.now();
