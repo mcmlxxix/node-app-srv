@@ -304,7 +304,7 @@ function init() {
 	
 	srv = net.createServer();
 	srv.on('listening',onListen);
-	srv.listen(settings.port,settings.host,onCreate);
+	srv.listen({'port':settings.port,'host':settings.host},onCreate);
 	log('application server initialized',LOG_INFO);
 }
 
