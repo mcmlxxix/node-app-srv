@@ -224,11 +224,11 @@ function sortClient(socket, request) {
 /* determine if authenticated user is in an application group list */
 function isApplicationUser(app,user) {
 	/* application allows anonymous access */
-	if(!appdata.groups) {
+	if(!app.appdata.groups) {
 		return true;
 	}
 	/* if we are allowing access to all groups */
-	if(appdata.groups == "*" || appdata.groups[0] == "*") {
+	if(app.appdata.groups == "*" || app.appdata.groups[0] == "*") {
 		for(var ug=0;ug<groups.length;ug++) {
 			if(isGroupMember(groups[ug],user))
 				return true;
