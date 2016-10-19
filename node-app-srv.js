@@ -8,21 +8,54 @@
 /* local variables */
 var fs, db, net, srv, rl, tx, err, defs, oper, crypto, pako, log, settings, dblist, databases, identities, users, groups, applications;
 
-/* global functions */
-global.createUser = function(username,password,group) {
-	/* if user already exists, fail */
-	if(!users[username]) {
+/* global shit */
+global.defs = require('./lib/defs');
+global.addUser = function(userName,password) {
+	if(!users[userName]) {
+		users[userName] = password;
+		return true
+	}
+	return false;
+}
+global.addGroup = function(groupName) {
+	if(!groups[groupName]) {
+		groups[groupName]=[];
+		return true;
+	}
+	return false;
+}
+global.addGroupUser = function(userName,groupName) {
+	if(!users[userName] || !groups[groupName]) 
 		return false;
-	}
-	/* create user */
-	users[username] = password;
-	/* add to group (optional) */
-	if(group) {
-		groups[group].push(username);
-	}
+	if(isGroupMember(groups[groupName],users[userName]))
+		return false;
+	groups[group].push(userName);
+	return true;
+}
+global.delUser = function(userName) {
+	if(!users[username]) 
+		return false;
+	delete users[username];
+	return true;
+}
+global.delGroup = function(groupName) {
+	if(!groups[groupName]) 
+		return false;
+	delete groups[groupName];
+	return true;
+}
+global.delGroupUser = function(userName,groupName) {
+	if(!users[userName] || !groups[groupName]) 
+		return false;
+	var n = isGroupMember(groups[groupName],users[userName]);
+	if(n<0)
+		return false;
+	groups[groupName].splice(n,1);
+	return true;
+}
+global.saveUsers = function() {
 	fs.writeFileSync('./settings/users.json','{\r\n' + JSON.stringify(users) + JSON.stringify(groups) + '\r\n}','utf8');
 	log('user/group list saved to ' + './settings/users.json');
-	return true;
 }
 
 /* console logging constants */
@@ -199,10 +232,10 @@ function isApplicationUser(app,user) {
 function isGroupMember(group,user) {
 	for(var u=0;u<group.length;u++) {
 		if(group[u] == user.name) {
-			return true;
+			return u;
 		}
 	}
-	return false;
+	return -1;
 }
 /* client identity pool */
 function getPool(num) {
@@ -233,7 +266,6 @@ function loadApplications(alist) {
 /* initialization */
 function init() {
 
-	global.defs = require('./lib/defs');
 	err = global.defs.error;
 	oper = global.defs.oper;
 	
